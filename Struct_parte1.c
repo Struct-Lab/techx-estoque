@@ -186,3 +186,99 @@ int main(void){
 	//=NULL;
    return 0; 
 }
+// INTEGRANTE 2
+void inicializarEstoque(Produto **vetor, int *capacidade, int *qtd){
+    *capacidade = 10;
+    *qtd = 0;
+    *vetor = (Produto *) malloc((*capacidade) * sizeof(Produto));
+    if(*vetor == NULL){
+        printf("Erro ao alocar memoria!\n");
+        exit(1);
+    }
+}
+
+void verificarEExpandirVetor(Produto **vetor, int *capacidade, int qtdAtual){
+    if(*capacidade == 0){
+        inicializarEstoque(vetor, capacidade, &qtdAtual);
+        return;
+    }
+    if(qtdAtual >= *capacidade){
+        *capacidade *= 2;
+        Produto *temp = (Produto *) realloc(*vetor, (*capacidade) * sizeof(Produto));
+        if(temp == NULL){
+            printf("Erro ao realocar memoria!\n");
+            exit(1);
+        }
+        *vetor = temp;
+    }
+}
+
+int buscarProduto(Produto *vetor, int qtd, int codigoBusca){
+    int i;
+    for (i = 0; i < qtd; i++){
+        if(vetor[i].id == codigoBusca){
+            return i;
+        }
+    }
+    return -1;
+}
+
+void alterarStatusProduto(Produto *vetor, int qtd, int codigoBusca){
+    int indice = buscarProduto(vetor, qtd, codigoBusca);
+    if(indice != -1){
+        vetor[indice].ativo = !vetor[indice].ativo;
+        printf("\nStatus do produto [%s] alterado com sucesso para: %s\n", vetor[indice].nome, vetor[indice].ativo ? "Ativo" : "Inativo");
+    }else{
+        printf("\nProduto com ID %d nao encontrado.\n", codigoBusca);
+    }
+}
+
+void salvarDadosBinario(Produto *vetor, int qtd, const char *nomeArquivo){
+    FILE *file = fopen(nomeArquivo, "wb");
+    if(file == NULL){
+        printf("Erro ao abrir o arquivo para gravacao.\n");
+        return;
+    }
+
+    fwrite(&qtd, sizeof(int), 1, file);
+
+    if(qtd > 0){
+        fwrite(vetor, sizeof(Produto), qtd, file);
+    }
+    fclose(file);
+}
+
+void carregarDadosBinario(Produto **vetor, int *qtd, int *capacidade, const char *nomeArquivo){
+    FILE *file = fopen(nomeArquivo, "rb");
+    if(file == NULL){
+        inicializarEstoque(vetor, capacidade, qtd);
+        return;
+    }
+
+    fseek(file, 0, SEEK_END);
+    long tamanhoArquivo = ftell(file);
+    rewind(file);
+
+    if(tamanhoArquivo <= sizeof(int)){
+        *qtd = 0;
+        *capacidade = 10;
+        *vetor = (Produto *) malloc ((*capacidade) * sizeof(Produto));
+        fclose(file);
+        return;
+    }
+
+    fread(qtd, sizeof(int), 1, file);
+
+    *capacidade = (*qtd > 0) ? *qtd * 2 : 10;
+    *vetor = (Produto *) malloc ((*capacidade) * sizeof(Produto));
+
+    if(*vetor != NULL && *qtd > 0){
+        fread(*vetor, sizeof(Produto), *qtd, file);
+    }
+    fclose(file);
+}
+
+void liberarMemoria(Produto **vetor){
+    free(*vetor);
+    *vetor = NULL;
+}
