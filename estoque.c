@@ -420,14 +420,14 @@ int main(void) {
                     printf("\nProduto encontrado!\n");
                     printf("ID: %d\n", estoque.produtos[indice].id);
                     printf("Nome: %s\n", estoque.produtos[indice].nome);
-                    printf("Preco: R$ %.2f\n",
-                           estoque.produtos[indice].preco);
-                    printf("Quantidade: %d\n",
-                           estoque.produtos[indice].qnt);
-                    printf("Status: %s\n",
-                           estoque.produtos[indice].ativo
-                               ? "Ativo" : "Inativo");
-                } else {
+                    printf("Preco: R$ %.2f\n", estoque.produtos[indice].preco);
+                    printf("Quantidade: %d\n", estoque.produtos[indice].qnt);
+                    printf("Status: %s\n", estoque.produtos[indice].ativo ? "Ativo" : "Inativo");
+					printf("ID do fornecedor: %d\n", estoque.produtos[indice].fornecedor.id);  
+					printf("Nome do fornecedor: %s\n", estoque.produtos[indice].fornecedor.nome);
+					printf("Telefone do fornecedor: %s\n", estoque.produtos[indice].fornecedor.telefone);              
+				} 
+				else {
                     printf("\nProduto nao encontrado!\n");
                 }
                 break;
