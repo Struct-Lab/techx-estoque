@@ -185,37 +185,31 @@ int buscarProduto(Produto *vetor, int qtd, int codigoBusca) {
 
 
 // -- Alocação de espaço de memoria --//
-void inicializarEstoque(Estoque *estoque) {
-    estoque->capacidade = 10;
-    estoque->qtdAtual = 0;
-
-    estoque->produtos = malloc(estoque->capacidade * sizeof(Produto));
-
-    if (estoque->produtos == NULL) {
+void inicializarEstoque(Produto **vetor, int *capacidade, int *qtd){
+    *capacidade = 10;
+    *qtd = 0;
+    *vetor = (Produto *) malloc((*capacidade) * sizeof(Produto));
+    if(*vetor == NULL){
         printf("Erro ao alocar memoria!\n");
         exit(1);
     }
 }
 
-void verificarEExpandirVetor(Estoque *estoque) {
-    if (estoque->qtdAtual >= estoque->capacidade) {
-        int novaCapacidade = estoque->capacidade * 2;
-
-        Produto *temp = realloc(
-            estoque->produtos,
-            novaCapacidade * sizeof(Produto)
-        );
-
-        if (temp == NULL) {
+void verificarEExpandirVetor(Produto **vetor, int *capacidade, int qtdAtual){
+    if(*capacidade == 0){
+        inicializarEstoque(vetor, capacidade, &qtdAtual);
+        return;
+    }
+    if(qtdAtual >= *capacidade){
+        *capacidade *= 2;
+        Produto *temp = (Produto *) realloc(*vetor, (*capacidade) * sizeof(Produto));
+        if(temp == NULL){
             printf("Erro ao realocar memoria!\n");
             exit(1);
         }
-
-        estoque->produtos = temp;
-        estoque->capacidade = novaCapacidade;
+        *vetor = temp;
     }
 }
-
 
 // -- Função de alterar --//
 void alterarStatusProduto(Produto *vetor, int qtd, int codigoBusca) {
